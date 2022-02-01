@@ -13,12 +13,14 @@ exports.signupUser = (req, res, next) => {
         .then(user => {
             if (user.length >= 1) {
                 return res.status(409).json({
+                    status: 409,
                     message: "User Exists"
                 })
             } else {
                 bcrypt.hash(req.body.password, 10, (err, hash) => {
                     if (err) {
                         return res.status(500).json({
+                            status: 500,
                             error: err
                         });
                     } else {
@@ -31,12 +33,14 @@ exports.signupUser = (req, res, next) => {
                         user.save()
                             .then(result => {
                                 res.status(201).json({
+                                    status: 201,
                                     message: 'User created successfull'
                                 })
                             })
                             .catch(err => {
                                 console.log(err);
                                 res.status(500).json({
+                                    status: 500,
                                     error: err
                                 });
                             });
@@ -55,12 +59,14 @@ exports.loginUser = (req, res, next) => {
         .then(user => {
             if (user.length < 1) {
                 res.status(401).json({
+                    status: 401,
                     message: 'Auth Failed'
                 });
             }
             bcrypt.compare(req.body.password, user[0].password, (err, result) => {
                 if (err) {
                     res.status(401).json({
+                        status: 401,
                         message: 'Auth Failed'
                     });
                 }
@@ -76,12 +82,14 @@ exports.loginUser = (req, res, next) => {
                         });
 
                     res.status(200).json({
+                        status: 200,
                         message: 'Auth Successful',
                         token: token
                     });
                 }
                 if (err) {
                     res.status(401).json({
+                        status: 402,
                         message: 'Auth Failed'
                     });
                 }
@@ -90,6 +98,7 @@ exports.loginUser = (req, res, next) => {
         .catch(err => {
             console.log(err);
             res.status(500).json({
+                status: 500,
                 error: err
             });
         })
@@ -101,9 +110,15 @@ exports.loginUser = (req, res, next) => {
 exports.GetAllUser = (req, res) => {
     User.find()
         .then(result => {
-            res.send(result);
+
+            res.status(200).json({
+                status: 200,
+                data: result,
+                message: 'Success'
+            });
         }).catch(err => {
             res.status(500).send({
+                status: 500,
                 message: err.message || "Some error occurred while retrieving users."
             });
         });
@@ -116,10 +131,12 @@ exports.GetUserById = (req, res) => {
         .exec()
         .then(result => {
             res.status(200).json({
+                status: 200,
                 data: result
             });
         }).catch(err => {
             res.status(500).send({
+                status: 500,
                 message: err.message || "Some error occurred while retrieving users."
             });
         });
